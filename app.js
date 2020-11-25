@@ -11,10 +11,11 @@ const pool = mysql.createPool({
     database: "test1_db",
     connectionLimit: 10
 });
+//routes
 app.post('/api/users', createUser);
 app.get("/api/users", getAllUsers);
 app.post("/api/users/login", login);
-//app.get("/api/trains", listAllTrains);
+app.get("/api/trains", listAllTrains);
 app.post('/api/addtrains', addTrains);
 async function createUser(req, res) {
     let user = req.body;
@@ -45,22 +46,22 @@ async function login(req, res) {
         res.json(user);
     }
 }
- /*get the train details
- async function listAllTrains(req, res) {
+//get the train details
+async function listAllTrains(req, res) {
     const result = await pool.query("select trainnumber,trainname,source,destination from trains");
     let trains = result[0];
     res.status(200).json(trains);
-} */
+}
 
-//insert the train details into trains table
+ //insert the train details into trains table
 async function addTrains(req, res) {
-    let addTrain = req.body;
-    console.log(addTrain);
-    let params = [trains.trainnumber, trains.trainname, trains.source, trains.destination];
-    const result = await pool.query("insert into trains (trainnumber,trainname,source,destination) values ( ?,?,?,?)", params);
-    let id = result[0].insertId;
-    res.status(200).json({ id: id });
+   const addTrain = req.body;
+   console.log(addTrain);
+   let params = [addTrain.trainnumber, addTrain.trainname, addTrain.source, addTrain.destination];
+   const result = await pool.query("insert into trains (trainnumber,trainname,source,destination) values ( ?,?,?,?)", params);
+   let id = result[0].insertId;
+   res.status(200).json({ id: id }); 
 
 
-    app.listen(port, () => console.log(`Example app listening on port port!`))
+app.listen(port, () => console.log(`Example app listening on port port!`))
 }
