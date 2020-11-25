@@ -15,8 +15,15 @@ const pool = mysql.createPool({
 app.post('/api/users', createUser);
 app.get("/api/users", getAllUsers);
 app.post("/api/users/login", login);
+//trains
 app.get("/api/trains", listAllTrains);
 app.post('/api/addtrains', addTrains);
+//tickets
+app.post('/api/bookings', bookTickets);
+app.get('/api/viewtickets', listAllTickets);
+//app.get('/api/viewtickets/:id', viewMyTickets);
+app.delete('/api/deletetickets/:id', deleteTicket);
+
 async function createUser(req, res) {
     let user = req.body;
     console.log(user);
@@ -53,15 +60,38 @@ async function listAllTrains(req, res) {
     res.status(200).json(trains);
 }
 
- //insert the train details into trains table
+//insert the train details into trains table
 async function addTrains(req, res) {
-   const addTrain = req.body;
-   console.log(addTrain);
-   let params = [addTrain.trainnumber, addTrain.trainname, addTrain.source, addTrain.destination];
-   const result = await pool.query("insert into trains (trainnumber,trainname,source,destination) values ( ?,?,?,?)", params);
-   let id = result[0].insertId;
-   res.status(200).json({ id: id }); 
+    const addTrain = req.body;
+    console.log(addTrain);
+    let params = [addTrain.trainnumber, addTrain.trainname, addTrain.source, addTrain.destination];
+    const result = await pool.query("insert into trains (trainnumber,trainname,source,destination) values ( ?,?,?,?)", params);
+    let id = result[0].insertId;
+    res.status(200).json({ id: id });
 
-
-app.listen(port, () => console.log(`Example app listening on port port!`))
 }
+//insert the booking details into bookings table
+async function bookTickets(req, res) {
+    const book = req.body;
+    console.log(book);
+    let params = [book.name, book.fromstation, book.tostation, book.journeydate, book.travellers, book.class, book.bookeddate, book.status, book.trainnumber];
+    const result = await pool.query("insert into bookings(name,fromstation,tostation,journeydate,travellers,class,bookeddate,status,trainnumber) values (?,?,?,?,?,?,?,?,?)", params);
+    let id = result[0].insertId;
+    res.status(200).json({ id: id });
+
+}
+//get the ticket details
+async function listAllTickets(req, res) {
+    const result = await pool.query("select * from bookings");
+    let tickets = result[0];
+    res.status(200).json(tickets);
+}
+ 
+/* //delete ticket booking
+async function deleteTicket(req, res) {
+    const id = req.params.ticketID;
+    let params = [id];
+    const result = await pool.query("delete * from bookings where ticketID = ?", params);
+    res.status(200).json(result[0].info);
+} */
+app.listen(port, () => console.log(`Example app listening on port port!`))
