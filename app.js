@@ -18,11 +18,11 @@ app.post("/api/users/login", login);
 //trains
 app.get("/api/trains", listAllTrains);
 app.post('/api/addtrains', addTrains);
+app.delete('/api/trains/:trainname',deleteTrains);
 //tickets
 app.post('/api/bookings', bookTickets);
 app.get('/api/viewtickets', listAllTickets);
-//app.get('/api/viewtickets/:id', viewMyTickets);
-app.delete('/api/deletetickets/:id', deleteTicket);
+app.delete('/api/deletetickets/:ticketID', deleteTicket);
 
 async function createUser(req, res) {
     let user = req.body;
@@ -86,12 +86,21 @@ async function listAllTickets(req, res) {
     let tickets = result[0];
     res.status(200).json(tickets);
 }
- 
-/* //delete ticket booking
+
+//delete ticket booking
 async function deleteTicket(req, res) {
-    const id = req.params.ticketID;
-    let params = [id];
-    const result = await pool.query("delete * from bookings where ticketID = ?", params);
-    res.status(200).json(result[0].info);
-} */
+    const ticketID=req.params.ticketID;
+    let params=[ticketID];
+    const result = await pool.query("delete  from bookings where ticketID = ?", params);
+    res.status(201).json(result[0].info);
+  
+}
+//delete train details
+async function deleteTrains(req,res) {
+    const trainname = req.params.trainname;
+    let params = [trainname];
+    const result = await pool.query("delete from trains where trainname = ?", params);
+    res.status(201).json(result[0].info);
+    
+}
 app.listen(port, () => console.log(`Example app listening on port port!`))
