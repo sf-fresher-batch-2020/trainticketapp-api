@@ -1,6 +1,8 @@
 const express = require('express')
 const app = express()
 app.use(express.json())
+const cors = require('cors');
+app.use(cors());
 const port = 3000
 const mysql = require("mysql2/promise");
 const pool = mysql.createPool({
@@ -35,7 +37,7 @@ async function createUser(req, res) {
 }
 //get the user details
 async function getAllUsers(req, res) {
-    const result = await pool.query("select id,name,email,role from users");
+    const result = await pool.query("select id,name,email,password from users");
     let users = result[0];
     res.status(200).json(users);
 }
@@ -43,7 +45,7 @@ async function getAllUsers(req, res) {
 async function login(req, res) {
     let { email, password } = req.body;
     let params = [email, password];
-    let result = await pool.query("select id,name,email,role from users where email=? and password = ?", params);
+    let result = await pool.query("select id,name,email,password from users where email=? and password = ?", params);
     let users = result[0];
     if (users.length == 0) {
         res.json({ message: "Invalid Login Credentials" });
